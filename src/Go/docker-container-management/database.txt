@@ -1,0 +1,8 @@
+This is the schema for the bolt database
+
+Active Docker containers bucket :
+-------------------------------------
+key : unique container_id
+value : Container name
+-------------------------------------
+

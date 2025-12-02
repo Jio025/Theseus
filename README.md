@@ -1,2 +1,2 @@
 # Theseus
-A automatic docker container deployment tool
+A automatic docker container deployment tool built in Go
