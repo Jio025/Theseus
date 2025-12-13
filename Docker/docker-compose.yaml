@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: theseus
+    image: theseus-1
+    env_file:
+      - docker.env
+    ports:
+      - "3000:3000"
