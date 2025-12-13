@@ -17,7 +17,7 @@ import (
 // DeployContainerBackground deploys a container as background process
 // on the host machine much like docker run -d container would
 
-func DeployContainerBackground(dockerContainer DockerContainer) error {
+func DeployContainerBackground(dockerContainer DockerContainer, s *DBService) error {
 
 	ctx := context.Background()
 
@@ -27,7 +27,7 @@ func DeployContainerBackground(dockerContainer DockerContainer) error {
 		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
-		log.Printf("Error creating the Docker API client : %v", err)
+		log.Printf("❗ Error creating the Docker API client : %v", err)
 		return err
 	}
 	defer cli.Close()
@@ -35,7 +35,7 @@ func DeployContainerBackground(dockerContainer DockerContainer) error {
 	// Pull the image
 	out, err := cli.ImagePull(ctx, dockerContainer.Name, image.PullOptions{})
 	if err != nil {
-		log.Printf("Error pylling the docker image : %v", err)
+		log.Printf("❗ Error pylling the docker image : %v", err)
 		return err
 	}
 	defer out.Close()
@@ -49,7 +49,7 @@ func DeployContainerBackground(dockerContainer DockerContainer) error {
 		dockerContainer.Container, // container name
 	)
 	if err != nil {
-		log.Printf("Error creating the docker container : %v", err)
+		log.Printf("❗ Error creating the docker container : %v", err)
 		return err
 	}
 
@@ -59,11 +59,14 @@ func DeployContainerBackground(dockerContainer DockerContainer) error {
 		resp.ID,
 		container.StartOptions{},
 	); err != nil {
-		log.Printf("Error starting the docker container : %v", err)
+		log.Printf("❗ Error starting the docker container : %v", err)
 		return err
 	}
 
-	log.Println("Started container:", resp.ID)
+	// Insert the container inside the Bolt database
+	s.SaveActiveDockerContainer(dockerContainer)
+
+	log.Println("🧰 Started container:", resp.ID)
 
 	return nil
 }

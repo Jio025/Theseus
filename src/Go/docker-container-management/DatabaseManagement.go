@@ -39,7 +39,7 @@ const HostMachineBucketName = "HostMachines"
 func InitDB(filepath string) (*DBService, error) {
 	db, err := bolt.Open(filepath, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
-		return nil, fmt.Errorf("could not open the database: %v", err)
+		return nil, fmt.Errorf("❗ could not open the database: %v", err)
 	}
 
 	// Creating the buckets
@@ -49,13 +49,13 @@ func InitDB(filepath string) (*DBService, error) {
 
 		for _, bucket := range buckets {
 			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
-				return fmt.Errorf("error creating bucket %s: %s", bucket, err)
+				return fmt.Errorf("❗ error creating bucket %s: %s", bucket, err)
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error creating bucket in database: %s", err)
+		return nil, fmt.Errorf("❗ error creating bucket in database: %s", err)
 	}
 
 	return &DBService{db: db}, nil
@@ -104,7 +104,7 @@ func (s DBService) GetActiveDockerContainerByID(id string) (*DockerContainer, er
 
 		// if the data is nil, the key dosent exist
 		if data == nil {
-			return fmt.Errorf("the Docker Container for id : %s, was not found", id)
+			return fmt.Errorf("❗ the Docker Container for id : %s, was not found", id)
 		}
 
 		// Deserializing the JSON back to Struct
@@ -112,7 +112,7 @@ func (s DBService) GetActiveDockerContainerByID(id string) (*DockerContainer, er
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("error reading the data for id : %s", id)
+		return nil, fmt.Errorf("❗ error reading the data for id : %s", id)
 	}
 
 	return &d, nil
@@ -129,7 +129,7 @@ func (s DBService) GetActiveHostMachineByID(id string) (*HostMachines, error) {
 
 		// if the data is nil, the key dosent exist
 		if data == nil {
-			return fmt.Errorf("the host machine for id : %s, was not found", id)
+			return fmt.Errorf("❗ the host machine for id : %s, was not found", id)
 		}
 
 		// Deserializing the JSON back to Struct
@@ -137,7 +137,7 @@ func (s DBService) GetActiveHostMachineByID(id string) (*HostMachines, error) {
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("error reading the data for id : %s", id)
+		return nil, fmt.Errorf("❗ error reading the data for id : %s", id)
 	}
 
 	return &h, nil
