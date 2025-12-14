@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "CommonJS",
-    "outDir": "../JS"
+    "outDir": "../JS",
+    "lib": ["es5", "dom", "es2015.promise"]
   }
 }
