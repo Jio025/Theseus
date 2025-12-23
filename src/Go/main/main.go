@@ -20,7 +20,25 @@ func main() {
 	defer store.Close()
 
 	// Test for DB content
+	var test1 dockercontainermanagement.DockerContainer
+	test1.ID = "Id test1"
+	test1.Name = "Name test1"
+	test1.Container = "Container test1"
+	test1.Status = "running"
+	var test2 dockercontainermanagement.DockerContainer
+	test2.ID = "Id test2"
+	test2.Name = "Name test2"
+	test2.Container = "Container test2"
+	test2.Status = "restarting"
+	var test3 dockercontainermanagement.DockerContainer
+	test3.ID = "Id test3"
+	test3.Name = "Name test3"
+	test3.Container = "Container test3"
+	test3.Status = "stopped"
 
+	store.SaveActiveDockerContainer(test1)
+	store.SaveActiveDockerContainer(test2)
+	store.SaveActiveDockerContainer(test3)
 	// Create a Gin router with default middleware (logger and recovery)
 	r := gin.Default()
 	wd, _ := os.Getwd()
@@ -48,13 +66,16 @@ func main() {
 	r.GET("/signup", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "signup.html", gin.H{})
 	})
+	r.GET("/container/launchpage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "containerLaunchpage.html", gin.H{})
+	})
 
 	// API Endpoints :
 	// Define a simple GET endpoint
-	r.GET("/ping", func(c *gin.Context) {
+	r.GET("/status", func(c *gin.Context) {
 		// Return JSON response
 		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
+			"message": "Theseus service is up!",
 		})
 	})
 	r.GET("/api/containers/running", func(c *gin.Context) {

@@ -14,6 +14,18 @@ import (
 	"github.com/docker/docker/client"
 )
 
+// The DockerDeployment struct is a json that will be recived from the UI to deploy a docker Container
+type DockerDeployment struct {
+	TYPE                 string `json:"type"`
+	NAME                 string `json:"name"`
+	IMAGENAME            string `json:"imageName"`
+	HOSTMACHINE          string `json:"hostMachine"`
+	RESTARTPOLICY        bool   `json:"restartPolicy"`
+	PORTMAPPING          string `json:"portMapping"`
+	ENVIRONMENTVARIABLES string `json:"environementVariables"`
+	VOLUMEMOUNTS         string `json:"volumeMounts"`
+}
+
 // DeployContainerBackground deploys a container as background process
 // on the host machine much like docker run -d container would
 

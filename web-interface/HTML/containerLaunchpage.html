@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Theseus - Deploy Container</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="icon" type="image/x-icon" href="/static/IMG/favicon.ico">
+  </head>
+  <body class="bg-dark">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-box-seam"></i> Theseus
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>   
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="settings">Settings</a>
+            </li>
+          </ul>
+          <span class="navbar-text text-white">
+            <small>Status: Connected</small>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container">
+      
+        <!-- Header Row -->
+        <div class="row mb-4">
+            <div class="col">
+                <h2>Deploy New Container</h2>
+                <p class="text-secondary">Choose container type and configure deployment settings.</p>
+            </div>
+        </div>
+
+        <!-- Container Type Selection -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark">
+                        <h5 class="mb-0">1. Select Container Type</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-primary" id="normalContainerCard" style="cursor: pointer;">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-box display-4 text-primary"></i>
+                                        <h5 class="card-title mt-3">Standard Container</h5>
+                                        <p class="card-text text-muted">Deploy a regular Docker container with custom configuration</p>
+                                        <div class="form-check d-flex justify-content-center">
+                                            <input class="form-check-input" type="radio" name="containerType" id="normalContainer" value="normal" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-info" id="webtopContainerCard" style="cursor: pointer;">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-display display-4 text-info"></i>
+                                        <h5 class="card-title mt-3">Webtop Container</h5>
+                                        <p class="card-text text-muted">Deploy a LinuxServer.io Webtop with desktop environment</p>
+                                        <div class="form-check d-flex justify-content-center">
+                                            <input class="form-check-input" type="radio" name="containerType" id="webtopContainer" value="webtop">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Form -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark">
+                        <h5 class="mb-0">2. Container Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Basic Settings -->
+                        <h6 class="text-primary mb-3"><i class="bi bi-gear"></i> Basic Settings</h6>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="containerName" class="form-label">Container Name</label>
+                                <input type="text" class="form-control" id="containerName" placeholder="my-container">
+                            </div>
+                            <div class="col-md-6" id="imageField">
+                                <label for="imageName" class="form-label">Image Name</label>
+                                <input type="text" class="form-control" id="imageName" placeholder="nginx:latest">
+                            </div>
+                            <div class="col-md-6" id="webtopDesktopField" style="display: none;">
+                                <label for="desktopEnv" class="form-label">Desktop Environment</label>
+                                <select class="form-select" id="desktopEnv">
+                                    <option value="xfce">XFCE</option>
+                                    <option value="kde">KDE</option>
+                                    <option value="mate">MATE</option>
+                                    <option value="i3">i3</option>
+                                    <option value="openbox">Openbox</option>
+                                    <option value="icewm">IceWM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="hostMachine" class="form-label">Host Machine</label>
+                                <select class="form-select" id="hostMachine">
+                                    <option selected>Production-US-East (192.168.1.10)</option>
+                                    <option>Staging-EU-West (10.0.0.5)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="restartPolicy" class="form-label">Restart Policy</label>
+                                <select class="form-select" id="restartPolicy">
+                                    <option value="no">No</option>
+                                    <option value="always" selected>Always</option>
+                                    <option value="unless-stopped">Unless Stopped</option>
+                                    <option value="on-failure">On Failure</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Port Mapping -->
+                        <h6 class="text-primary mb-3"><i class="bi bi-hdd-network"></i> Port Mapping</h6>
+                        <div id="portMappings">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-5">
+                                    <input type="number" class="form-control" placeholder="Host Port (e.g., 8080)">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="number" class="form-control" placeholder="Container Port (e.g., 80)">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-danger w-100" type="button">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-success btn-sm mb-4" type="button" id="addPortBtn">
+                            <i class="bi bi-plus-lg"></i> Add Port
+                        </button>
+
+                        <!-- Environment Variables -->
+                        <h6 class="text-primary mb-3"><i class="bi bi-code-square"></i> Environment Variables</h6>
+                        <div id="envVariables">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Variable Name">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Value">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-danger w-100" type="button">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-success btn-sm mb-4" type="button" id="addEnvBtn">
+                            <i class="bi bi-plus-lg"></i> Add Variable
+                        </button>
+
+                        <!-- Volume Mounts -->
+                        <h6 class="text-primary mb-3"><i class="bi bi-folder"></i> Volume Mounts</h6>
+                        <div id="volumeMounts">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Host Path">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" placeholder="Container Path">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-danger w-100" type="button">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-success btn-sm mb-4" type="button" id="addVolumeBtn">
+                            <i class="bi bi-plus-lg"></i> Add Volume
+                        </button>
+
+                        <!-- Webtop Specific Options -->
+                        <div id="webtopOptions" style="display: none;">
+                            <h6 class="text-info mb-3"><i class="bi bi-display"></i> Webtop Specific Settings</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="webtopUser" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="webtopUser" placeholder="abc">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="webtopPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="webtopPassword" placeholder="Password">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-secondary" onclick="window.history.back()">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </button>
+                            <button class="btn btn-success btn-lg" id="deployBtn">
+                                <i class="bi bi-rocket-takeoff"></i> Deploy Container
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End Container -->
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    </body>
+</html>

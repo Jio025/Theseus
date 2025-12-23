@@ -16,12 +16,15 @@ type DockerContainer struct {
 	Name string `json:"name"`
 	// Container is the container name
 	Container string `json:"container"`
+	// Container Status eg: Active, Stopped, Restarting
+	Status string `json:"status"`
 }
 
 // JSON for the host machines
 type HostMachines struct {
-	ID string `json:"id"`
-	IP string `json:"ip"`
+	ID     string `json:"id"`
+	IP     string `json:"ip"`
+	Status string `json:"status"`
 }
 
 // DB service wraps the BoltDB instance

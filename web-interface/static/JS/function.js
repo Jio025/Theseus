@@ -45,12 +45,11 @@ function fetchAllActiveContainers() {
                 case 1:
                     response = _a.sent();
                     if (!response.ok) {
-                        throw new Error("HTTP error, Status : ".concat(response.status));
+                        throw new Error("HTTP error, status : ".concat(response.status));
                     }
                     return [4 /*yield*/, response.json()];
                 case 2:
                     data = _a.sent();
-                    console.log(data);
                     return [2 /*return*/, data];
                 case 3:
                     error_1 = _a.sent();
@@ -61,15 +60,44 @@ function fetchAllActiveContainers() {
         });
     });
 }
+function fetchAllActiveHostMachine() {
+    return __awaiter(this, void 0, void 0, function () {
+        var response, data, error_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, fetch("/api/hostmachine/running")];
+                case 1:
+                    response = _a.sent();
+                    if (!response.ok) {
+                        throw new Error("HTTP error, status : ".concat(response.status));
+                    }
+                    return [4 /*yield*/, response.json()];
+                case 2:
+                    data = _a.sent();
+                    return [2 /*return*/, data];
+                case 3:
+                    error_2 = _a.sent();
+                    console.error("error fetching active host machines:", error_2.message);
+                    throw error_2;
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
 // Function to display the active containers in html
 function displayActiveDockerContainers() {
     return __awaiter(this, void 0, void 0, function () {
-        var activeContainersDiv, containers, error_2;
+        var activeContainersDiv, activeContainersCountDiv, containers, activeContainerCount_1, error_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     activeContainersDiv = document.getElementById("activeDockerContainers");
                     if (!activeContainersDiv)
+                        return [2 /*return*/];
+                    activeContainersCountDiv = document.getElementById("activeContainerCount");
+                    if (!activeContainersCountDiv)
                         return [2 /*return*/];
                     _a.label = 1;
                 case 1:
@@ -77,11 +105,37 @@ function displayActiveDockerContainers() {
                     return [4 /*yield*/, fetchAllActiveContainers()];
                 case 2:
                     containers = _a.sent();
-                    activeContainersDiv.innerHTML = containers.map(function (container) { return "<tr>\n                                <td><code>".concat(container.id, "</code></td>\n                                <td>").concat(container.name, "</td>\n                                <td><span class=\"badge rounded-pill text-bg-success\">Running</span></td>\n                                <td>\n                                <button class=\"btn btn-sm btn-outline-danger\">Stop</button>\n                                <button class=\"btn btn-sm btn-outline-secondary\">Logs</button>\n                                </td>\n                            </tr>"); })
-                        .join("");
+                    activeContainerCount_1 = 0;
+                    containers.forEach(function (container) {
+                        if (container.status == 'running') {
+                            activeContainerCount_1++;
+                        }
+                    });
+                    activeContainersCountDiv.textContent = "".concat(activeContainerCount_1, " Active");
+                    activeContainersDiv.innerHTML = containers.map(function (container) {
+                        var badgeClass, statusLabel, actionButton;
+                        switch (container.status) {
+                            case 'running':
+                                badgeClass = 'text-bg-success';
+                                statusLabel = 'Active';
+                                actionButton = "<button class=\"btn btn-sm btn-outline-danger\">Stop</button>";
+                                break;
+                            case 'restarting':
+                                badgeClass = 'text-bg-warning';
+                                statusLabel = 'Restarting';
+                                actionButton = "";
+                                break;
+                            // Stopped is default
+                            default:
+                                badgeClass = 'text-bg-danger';
+                                statusLabel = 'Stopped';
+                                actionButton = "<button class=\"btn btn-sm btn-outline-success\">Start</button>";
+                        }
+                        return "\n                        <tr>\n                            <td><code>".concat(container.id, "</code></td>\n                            <td>").concat(container.name, "</td>\n                            <td><span class=\"badge rounded-pill ").concat(badgeClass, "\">").concat(statusLabel, "</span></td>\n                            <td>\n                                ").concat(actionButton, "\n                                <button class=\"btn btn-sm btn-outline-secondary\">Logs</button>\n                            </td>\n                        </tr>");
+                    }).join("");
                     return [3 /*break*/, 4];
                 case 3:
-                    error_2 = _a.sent();
+                    error_3 = _a.sent();
                     activeContainersDiv.innerHTML = "\n            <tr>\n                <td colspan=\"4\" class=\"text-danger\">\n                    Failed to load containers\n                </td>\n            </tr>\n        ";
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];

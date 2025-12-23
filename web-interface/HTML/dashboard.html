@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/x-icon" href="/static/IMG/favicon.ico">
   </head>
-  <body class="bg-light">
+  <body class="bg-dark">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
       <div class="container-fluid">
         <a class="navbar-brand">
             <i class="bi bi-box-seam"></i> Theseus
@@ -47,7 +47,9 @@
                 <p class="text-secondary">Manage your host machines and active containers.</p>
             </div>
             <div class="col-auto">
-                <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Deploy New</button>
+                <a class="btn btn-primary" href="container/launchpage" role="button">
+                <i class="bi bi-plus-lg"></i> Deploy New
+                </a>
             </div>
         </div>
 
@@ -57,15 +59,15 @@
             <!-- Left Column: Active Containers -->
             <div class="col-md-8">
                 <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-dark d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Active Docker Containers</h5>
-                        <span class="badge bg-success">3 Running</span>
+                        <span class="badge bg-success" id="activeContainerCount"></span>
                     </div>
                     <div class="card-body">
                         <!-- Table -->
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
-                                <thead class="table-light">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
@@ -74,34 +76,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="activeDockerContainers">
-                                    <!-- Mock Data matching your Go Structs -->
-                                    <tr>
-                                        <td><code>a1b2c3d4</code></td>
-                                        <td>web-server-01</td>
-                                        <td><span class="badge rounded-pill text-bg-success">Running</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger">Stop</button>
-                                            <button class="btn btn-sm btn-outline-secondary">Logs</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>e5f6g7h8</code></td>
-                                        <td>database-primary</td>
-                                        <td><span class="badge rounded-pill text-bg-success">Running</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger">Stop</button>
-                                            <button class="btn btn-sm btn-outline-secondary">Logs</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>i9j0k1l2</code></td>
-                                        <td>cache-redis</td>
-                                        <td><span class="badge rounded-pill text-bg-warning">Restarting</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger">Stop</button>
-                                            <button class="btn btn-sm btn-outline-secondary">Logs</button>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -112,7 +86,7 @@
             <!-- Right Column: Host Machines -->
             <div class="col-md-4">
                 <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-dark">
                         <h5 class="mb-0">Host Machines</h5>
                     </div>
                     <ul class="list-group list-group-flush">
