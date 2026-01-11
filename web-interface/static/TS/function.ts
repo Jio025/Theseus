@@ -1,16 +1,26 @@
-// API to fetch active containers
-interface DockerContainer {
-    id: string;
-    name: string;
-    container: string;
-    status: string;
-}
-interface ActiveHostMachine {
+interface HostMachine {
     id: string
     ip: string
     status: string
 }
+export interface PortBinding {
+    internal: number;
+    external: number;
+}
+interface DockerContainer {
+id: string;
+    name: string;
+    container: string;
+    hostmachine: HostMachine;
+    restartpolicy: string;
+    ports: PortBinding[];
+    environmentvariables: Record<string, string>;
+    volumemounts: Record<string, string>;
+    shmsize: string;
+    status: string;
+}
 
+// API to fetch active containers
 async function fetchAllActiveContainers(): Promise<DockerContainer[]> {
     try {
         // Get Request
@@ -30,7 +40,7 @@ async function fetchAllActiveContainers(): Promise<DockerContainer[]> {
     }
 }
 
-async function fetchAllActiveHostMachine(): Promise<ActiveHostMachine[]> {
+async function fetchAllActiveHostMachine(): Promise<HostMachine[]> {
     try {
         const response = await fetch("/api/hostmachine/running");
 
@@ -39,7 +49,7 @@ async function fetchAllActiveHostMachine(): Promise<ActiveHostMachine[]> {
         }
 
         // Parsing the response
-        const data: ActiveHostMachine[] = await response.json();
+        const data: HostMachine[] = await response.json();
         return data;
     }
     catch(error) {

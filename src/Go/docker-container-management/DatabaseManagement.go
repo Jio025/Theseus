@@ -8,6 +8,18 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+// JSON for the host machines
+type HostMachines struct {
+	ID     string `json:"id"`
+	IP     string `json:"ip"`
+	Status string `json:"status"`
+}
+
+type PortBinding struct {
+	Internal int `json:"internal"`
+	External int `json:"external"`
+}
+
 // JSON for the dockercontainer running on the host
 type DockerContainer struct {
 	// ID is the PK in the database
@@ -16,14 +28,19 @@ type DockerContainer struct {
 	Name string `json:"name"`
 	// Container is the container name
 	Container string `json:"container"`
+	// Host machine that the container is running on
+	HostMachine HostMachines `json:"hostmachine"`
+	// Restart policy for the container
+	RestartPolicy string `json:"restartpolicy"`
+	// Ports of the docker container
+	Port []PortBinding `json:"ports"`
+	// Environment variables of a docker container
+	EnvironmentVariable map[string]string `json:"environmentvariables"`
+	// Volume mounts of the docker container
+	VolumeMounts map[string]string `json:"volumemounts"`
+	// shm_size of the docker container
+	ShmSize string `json:"shmsize"`
 	// Container Status eg: Active, Stopped, Restarting
-	Status string `json:"status"`
-}
-
-// JSON for the host machines
-type HostMachines struct {
-	ID     string `json:"id"`
-	IP     string `json:"ip"`
 	Status string `json:"status"`
 }
 

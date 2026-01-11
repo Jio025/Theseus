@@ -1,0 +1,18 @@
+services:
+  webtop-{{slice .ID 0 8}}:
+    image: {{.Name}}
+    container_name: {{.Container}}
+    environment:
+      {{- range $key, $value := .EnvironmentVariable}}
+      - {{$key}}={{$value}}
+      {{- end}}
+    volumes:
+      {{- range $hostPath, $containerPath := .VolumeMounts}}
+      - {{$hostPath}}:{{$containerPath}}
+      {{- end}}
+    ports:
+      {{- range .Port}}
+      - {{.External}}:{{.Internal}}
+      {{- end}}
+    shm_size: {{.ShmSize}}
+    restart: {{.RestartPolicy}}

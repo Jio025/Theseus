@@ -71,13 +71,14 @@ func main() {
 	})
 
 	// API Endpoints :
-	// Define a simple GET endpoint
+	// API Enpoint for testing if the service is up
 	r.GET("/status", func(c *gin.Context) {
 		// Return JSON response
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Theseus service is up!",
 		})
 	})
+	// API to get all runing containers in BBolt
 	r.GET("/api/containers/running", func(c *gin.Context) {
 		containers, err := store.GetAllActiveDockerContainers()
 		if err != nil {
@@ -89,6 +90,35 @@ func main() {
 		// Return JSON response
 		c.JSON(http.StatusOK, containers)
 	})
+
+	mockContainer := dockercontainermanagement.DockerContainer{
+		ID:        "550e8400-e29b-41d4-a716-446655440000",
+		Name:      "lscr.io/linuxserver/webtop:latest",
+		Container: "webtop_guillaume_dev",
+		HostMachine: dockercontainermanagement.HostMachines{
+			ID:     "node-01",
+			IP:     "192.168.1.50",
+			Status: "online",
+		},
+		RestartPolicy: "unless-stopped",
+		Port: []dockercontainermanagement.PortBinding{
+			{Internal: 3000, External: 3000},
+			{Internal: 3001, External: 3001},
+		},
+		EnvironmentVariable: map[string]string{
+			"PUID":  "1000",
+			"PGID":  "1000",
+			"TZ":    "America/Toronto",
+			"TITLE": "Guillaume-Webtop",
+		},
+		VolumeMounts: map[string]string{
+			"/home/guillaume/webtop/config": "/config",
+			"/var/run/docker.sock":          "/var/run/docker.sock",
+		},
+		ShmSize: "1gb",
+		Status:  "Active",
+	}
+	dockercontainermanagement.YamlWriter(mockContainer)
 
 	// Start server on port 8080 (default)
 	// Server will listen on 0.0.0.0:8080 (localhost:8080 on Windows)
