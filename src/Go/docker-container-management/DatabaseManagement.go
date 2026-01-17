@@ -187,7 +187,7 @@ func (s DBService) GetAllActiveHostMachines() ([]HostMachines, error) {
 	var hostMachines []HostMachines
 
 	err := s.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(DockerContainerBucketName))
+		b := tx.Bucket([]byte(HostMachineBucketName))
 
 		// Iterates for all key-values in the bucket
 		return b.ForEach(func(k, v []byte) error {

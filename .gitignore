@@ -1,0 +1,8 @@
+# ignore internal.db
+internal.db
+
+# ignore main
+main
+
+# ingore main.exe
+main.exe
