@@ -7,142 +7,363 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
+// API to fetch active containers
 function fetchAllActiveContainers() {
-    return __awaiter(this, void 0, void 0, function () {
-        var response, data, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, fetch("/api/containers/running")];
-                case 1:
-                    response = _a.sent();
-                    if (!response.ok) {
-                        throw new Error("HTTP error, status : ".concat(response.status));
-                    }
-                    return [4 /*yield*/, response.json()];
-                case 2:
-                    data = _a.sent();
-                    return [2 /*return*/, data];
-                case 3:
-                    error_1 = _a.sent();
-                    console.error('error fetching active docker containers:', error_1.message);
-                    throw error_1;
-                case 4: return [2 /*return*/];
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Get Request
+            const response = yield fetch("/api/containers/running");
+            if (!response.ok) {
+                throw new Error(`HTTP error, status : ${response.status}`);
             }
-        });
+            // Parsing the response
+            const data = yield response.json();
+            return data;
+        }
+        catch (error) {
+            console.error('error fetching active docker containers:', error.message);
+            throw error;
+        }
     });
 }
 function fetchAllActiveHostMachine() {
-    return __awaiter(this, void 0, void 0, function () {
-        var response, data, error_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, fetch("/api/hostmachine/running")];
-                case 1:
-                    response = _a.sent();
-                    if (!response.ok) {
-                        throw new Error("HTTP error, status : ".concat(response.status));
-                    }
-                    return [4 /*yield*/, response.json()];
-                case 2:
-                    data = _a.sent();
-                    return [2 /*return*/, data];
-                case 3:
-                    error_2 = _a.sent();
-                    console.error("error fetching active host machines:", error_2.message);
-                    throw error_2;
-                case 4: return [2 /*return*/];
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield fetch("/api/hostmachine/running");
+            if (!response.ok) {
+                throw new Error(`HTTP error, status : ${response.status}`);
             }
-        });
+            // Parsing the response
+            const data = yield response.json();
+            return data;
+        }
+        catch (error) {
+            console.error("error fetching active host machines:", error.message);
+            throw error;
+        }
+    });
+}
+function fetchContainerInfo() {
+    // 1. Fetch Basic Inputs
+    const containerName = document.getElementById("containerName").value;
+    const imageName = document.getElementById("imageName").value;
+    // TODO check for host machines
+    const hostMachineId = document.getElementById("hostMachine").value;
+    const restartPolicy = document.getElementById("restartPolicy").value;
+    // 2. Fetch Radio Button (Container Type)
+    const containerType = document.querySelector('input[name="containerType"]:checked').value;
+    // 3. Fetch Optional Webtop Data
+    const desktopEnv = document.getElementById("desktopEnv").value;
+    // 4. Helper function to fetch dynamic list data (Ports, Envs, Volumes)
+    const getListData = (containerId) => {
+        const rows = document.querySelectorAll(`#${containerId} .row`);
+        return Array.from(rows).map(row => {
+            var _a, _b;
+            const inputs = row.querySelectorAll('input');
+            return {
+                val1: (_a = inputs[0]) === null || _a === void 0 ? void 0 : _a.value,
+                val2: (_b = inputs[1]) === null || _b === void 0 ? void 0 : _b.value
+            };
+        }).filter(item => item.val1 || item.val2); // Filter out empty rows
+    };
+    const ports = getListData("portMappings").map(p => ({
+        external: parseInt(p.val1 || "0"),
+        internal: parseInt(p.val2 || "0")
+    }));
+    const environmentvariables = {};
+    getListData("envVariables").forEach(e => {
+        if (e.val1)
+            environmentvariables[e.val1] = e.val2 || "";
+    });
+    const volumemounts = {};
+    getListData("volumeMounts").forEach(v => {
+        if (v.val1)
+            volumemounts[v.val1] = v.val2 || "";
+    });
+    const finalData = {
+        name: containerName,
+        type: containerType,
+        container: containerType === 'webtop' ? `lscr.io/linuxserver/webtop:${desktopEnv}` : imageName,
+        desktopEnv: containerType === 'webtop' ? desktopEnv : undefined,
+        hostmachine: { id: hostMachineId, ip: "", status: "" },
+        restartpolicy: restartPolicy,
+        ports,
+        environmentvariables,
+        volumemounts,
+        shmsize: containerType === 'webtop' ? "1gb" : undefined
+    };
+    console.log("Deployment Data:", finalData);
+    return finalData;
+}
+// Function to create a webtop container
+function createWebtop(container) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield fetch("/api/webtop/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(container),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error, status : ${response.status}`);
+            }
+        }
+        catch (error) {
+            console.error("error creating webtop container:", error.message);
+            throw error;
+        }
     });
 }
 // Function to display the active containers in html
 function displayActiveDockerContainers() {
-    return __awaiter(this, void 0, void 0, function () {
-        var activeContainersDiv, activeContainersCountDiv, containers, activeContainerCount_1, error_3;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    activeContainersDiv = document.getElementById("activeDockerContainers");
-                    if (!activeContainersDiv)
-                        return [2 /*return*/];
-                    activeContainersCountDiv = document.getElementById("activeContainerCount");
-                    if (!activeContainersCountDiv)
-                        return [2 /*return*/];
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetchAllActiveContainers()];
-                case 2:
-                    containers = _a.sent();
-                    activeContainerCount_1 = 0;
-                    containers.forEach(function (container) {
-                        if (container.status == 'running') {
-                            activeContainerCount_1++;
-                        }
-                    });
-                    activeContainersCountDiv.textContent = "".concat(activeContainerCount_1, " Active");
-                    activeContainersDiv.innerHTML = containers.map(function (container) {
-                        var badgeClass, statusLabel, actionButton;
-                        switch (container.status) {
-                            case 'running':
-                                badgeClass = 'text-bg-success';
-                                statusLabel = 'Active';
-                                actionButton = "<button class=\"btn btn-sm btn-outline-danger\">Stop</button>";
-                                break;
-                            case 'restarting':
-                                badgeClass = 'text-bg-warning';
-                                statusLabel = 'Restarting';
-                                actionButton = "";
-                                break;
-                            // Stopped is default
-                            default:
-                                badgeClass = 'text-bg-danger';
-                                statusLabel = 'Stopped';
-                                actionButton = "<button class=\"btn btn-sm btn-outline-success\">Start</button>";
-                        }
-                        return "\n                        <tr>\n                            <td><code>".concat(container.id, "</code></td>\n                            <td>").concat(container.name, "</td>\n                            <td><span class=\"badge rounded-pill ").concat(badgeClass, "\">").concat(statusLabel, "</span></td>\n                            <td>\n                                ").concat(actionButton, "\n                                <button class=\"btn btn-sm btn-outline-secondary\">Logs</button>\n                            </td>\n                        </tr>");
-                    }).join("");
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_3 = _a.sent();
-                    activeContainersDiv.innerHTML = "\n            <tr>\n                <td colspan=\"4\" class=\"text-danger\">\n                    Failed to load containers\n                </td>\n            </tr>\n        ";
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        const activeContainersDiv = document.getElementById("activeDockerContainers");
+        if (!activeContainersDiv)
+            return;
+        const activeContainersCountDiv = document.getElementById("activeContainerCount");
+        if (!activeContainersCountDiv)
+            return;
+        try {
+            const containers = yield fetchAllActiveContainers();
+            let activeContainerCount = 0;
+            containers.forEach((container) => {
+                if (container.status == 'running') {
+                    activeContainerCount++;
+                }
+            });
+            activeContainersCountDiv.textContent = `${activeContainerCount} Active`;
+            activeContainersDiv.innerHTML = containers.map((container) => {
+                let badgeClass, statusLabel, actionButton;
+                switch (container.status) {
+                    case 'running':
+                        badgeClass = 'text-bg-success';
+                        statusLabel = 'Active';
+                        actionButton = `<button class="btn btn-sm btn-outline-danger">Stop</button>`;
+                        break;
+                    case 'restarting':
+                        badgeClass = 'text-bg-warning';
+                        statusLabel = 'Restarting';
+                        actionButton = ``;
+                        break;
+                    // Stopped is default
+                    default:
+                        badgeClass = 'text-bg-danger';
+                        statusLabel = 'Stopped';
+                        actionButton = `<button class="btn btn-sm btn-outline-success">Start</button>`;
+                }
+                return `
+                        <tr>
+                            <td><code>${container.id}</code></td>
+                            <td>${container.name}</td>
+                            <td><span class="badge rounded-pill ${badgeClass}">${statusLabel}</span></td>
+                            <td>
+                                ${actionButton}
+                                <button class="btn btn-sm btn-outline-secondary">Logs</button>
+                            </td>
+                        </tr>`;
+            }).join("");
+        }
+        catch (error) {
+            activeContainersDiv.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-danger">
+                    Failed to load containers
+                </td>
+            </tr>
+        `;
+        }
     });
 }
-document.addEventListener("DOMContentLoaded", function () {
+function toggleContainerType(type) {
+    const imageField = document.getElementById('imageField');
+    const webtopDesktopField = document.getElementById('webtopDesktopField');
+    const webtopOptions = document.getElementById('webtopOptions');
+    if (type === 'webtop') {
+        if (imageField)
+            imageField.style.display = 'none';
+        if (webtopDesktopField)
+            webtopDesktopField.style.display = 'block';
+        if (webtopOptions)
+            webtopOptions.style.display = 'block';
+        setupWebtopDefaults();
+    }
+    else {
+        if (imageField)
+            imageField.style.display = 'block';
+        if (webtopDesktopField)
+            webtopDesktopField.style.display = 'none';
+        if (webtopOptions)
+            webtopOptions.style.display = 'none';
+    }
+}
+function setupWebtopDefaults() {
+    // Set Container Name
+    const nameInput = document.getElementById('containerName');
+    if (nameInput && !nameInput.value)
+        nameInput.value = 'webtop';
+    // Set Ports
+    const portContainer = document.getElementById('portMappings');
+    if (portContainer) {
+        portContainer.innerHTML = `
+        <div class="row g-2 mb-2">
+            <div class="col-md-5">
+                <input type="number" class="form-control" value="3000">
+            </div>
+            <div class="col-md-5">
+                <input type="number" class="form-control" value="3000">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-danger w-100" type="button" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col-md-5">
+                <input type="number" class="form-control" value="3001">
+            </div>
+            <div class="col-md-5">
+                <input type="number" class="form-control" value="3001">
+            </div>
+             <div class="col-md-2">
+                <button class="btn btn-outline-danger w-100" type="button" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>`;
+    }
+    // Set Envs
+    const envContainer = document.getElementById('envVariables');
+    if (envContainer) {
+        envContainer.innerHTML = `
+        <div class="row g-2 mb-2">
+            <div class="col-md-5"><input type="text" class="form-control" value="PUID"></div>
+            <div class="col-md-5"><input type="text" class="form-control" value="1000"></div>
+            <div class="col-md-2"><button class="btn btn-outline-danger w-100" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button></div>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col-md-5"><input type="text" class="form-control" value="PGID"></div>
+            <div class="col-md-5"><input type="text" class="form-control" value="1000"></div>
+            <div class="col-md-2"><button class="btn btn-outline-danger w-100" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button></div>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col-md-5"><input type="text" class="form-control" value="TZ"></div>
+            <div class="col-md-5"><input type="text" class="form-control" value="Etc/UTC"></div>
+            <div class="col-md-2"><button class="btn btn-outline-danger w-100" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button></div>
+        </div>
+    `;
+    }
+    // Set Restart Policy
+    const restartSelect = document.getElementById('restartPolicy');
+    if (restartSelect)
+        restartSelect.value = 'unless-stopped';
+    // Set Volume Mount hint (Optional, just clearing or setting default)
+    const volContainer = document.getElementById('volumeMounts');
+    if (volContainer) {
+        volContainer.innerHTML = `
+        <div class="row g-2 mb-2">
+            <div class="col-md-5"><input type="text" class="form-control" placeholder="/path/to/data"></div>
+            <div class="col-md-5"><input type="text" class="form-control" value="/config"></div>
+            <div class="col-md-2"><button class="btn btn-outline-danger w-100" onclick="this.closest('.row').remove()"><i class="bi bi-trash"></i></button></div>
+        </div>`;
+    }
+}
+document.addEventListener("DOMContentLoaded", () => {
     displayActiveDockerContainers();
+    const deployBtn = document.getElementById("deployBtn");
+    if (deployBtn) {
+        deployBtn.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = fetchContainerInfo();
+                console.log("Deploying container:", data);
+                yield createWebtop(data);
+                alert("Container deployment initiated successfully!");
+                window.location.href = "/";
+            }
+            catch (error) {
+                console.error("Deployment failed:", error);
+                alert("Failed to deploy container: " + error.message);
+            }
+        }));
+    }
+    // UI Toggling
+    const normalCard = document.getElementById('normalContainerCard');
+    const webtopCard = document.getElementById('webtopContainerCard');
+    if (normalCard) {
+        normalCard.addEventListener('click', () => {
+            const radio = document.getElementById('normalContainer');
+            if (radio)
+                radio.checked = true;
+            toggleContainerType('normal');
+        });
+    }
+    if (webtopCard) {
+        webtopCard.addEventListener('click', () => {
+            const radio = document.getElementById('webtopContainer');
+            if (radio)
+                radio.checked = true;
+            toggleContainerType('webtop');
+        });
+    }
+    // Add dynamic row buttons handlers (for the initial rows)
+    // Note: Inline onclick handlers are used in the generated HTML for simplicity
+    // But we should probably add handlers for the "Add" buttons here too if they aren't working
+    const addPortBtn = document.getElementById('addPortBtn');
+    if (addPortBtn) {
+        addPortBtn.addEventListener('click', () => {
+            var _a;
+            const container = document.getElementById('portMappings');
+            if (container) {
+                const div = document.createElement('div');
+                div.className = 'row g-2 mb-2';
+                div.innerHTML = `
+                    <div class="col-md-5"><input type="number" class="form-control" placeholder="Host"></div>
+                    <div class="col-md-5"><input type="number" class="form-control" placeholder="Container"></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100"><i class="bi bi-trash"></i></button></div>
+                `;
+                (_a = div.querySelector('button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            }
+        });
+    }
+    // Equivalent logic should be applied to Add Env and Add Volume buttons if not already present in the original code
+    // The user didn't show the setup for those buttons in previous dumps, so I'll add them here for completeness
+    const addEnvBtn = document.getElementById('addEnvBtn');
+    if (addEnvBtn) {
+        addEnvBtn.addEventListener('click', () => {
+            var _a;
+            const container = document.getElementById('envVariables');
+            if (container) {
+                const div = document.createElement('div');
+                div.className = 'row g-2 mb-2';
+                div.innerHTML = `
+                    <div class="col-md-5"><input type="text" class="form-control" placeholder="Variable"></div>
+                    <div class="col-md-5"><input type="text" class="form-control" placeholder="Value"></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100"><i class="bi bi-trash"></i></button></div>
+                `;
+                (_a = div.querySelector('button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            }
+        });
+    }
+    const addVolumeBtn = document.getElementById('addVolumeBtn');
+    if (addVolumeBtn) {
+        addVolumeBtn.addEventListener('click', () => {
+            var _a;
+            const container = document.getElementById('volumeMounts');
+            if (container) {
+                const div = document.createElement('div');
+                div.className = 'row g-2 mb-2';
+                div.innerHTML = `
+                     <div class="col-md-5"><input type="text" class="form-control" placeholder="Host Path"></div>
+                                <div class="col-md-5"><input type="text" class="form-control" placeholder="Container Path"></div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-danger w-100" type="button">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                `;
+                (_a = div.querySelector('button')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            }
+        });
+    }
 });

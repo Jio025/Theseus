@@ -1,10 +1,14 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -36,9 +40,9 @@ func main() {
 	test3.Container = "Container test3"
 	test3.Status = "stopped"
 
-	store.SaveActiveDockerContainer(test1)
-	store.SaveActiveDockerContainer(test2)
-	store.SaveActiveDockerContainer(test3)
+	store.SaveDockerContainer(test1)
+	store.SaveDockerContainer(test2)
+	store.SaveDockerContainer(test3)
 	// Create a Gin router with default middleware (logger and recovery)
 	r := gin.Default()
 	wd, _ := os.Getwd()
@@ -80,7 +84,7 @@ func main() {
 	})
 	// API to get all runing containers in BBolt
 	r.GET("/api/containers/running", func(c *gin.Context) {
-		containers, err := store.GetAllActiveDockerContainers()
+		containers, err := store.GetAllDockerContainers()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -89,6 +93,28 @@ func main() {
 		}
 		// Return JSON response
 		c.JSON(http.StatusOK, containers)
+	})
+
+	// API to create a webtop container
+	r.POST("/api/webtop/create", func(c *gin.Context) {
+		var container dockercontainermanagement.DockerContainer
+		if err := c.BindJSON(&container); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if container.ID == "" {
+			bytes := make([]byte, 4) // 8 characters hex
+			if _, err := rand.Read(bytes); err == nil {
+				container.ID = hex.EncodeToString(bytes)
+			} else {
+				// Fallback if random fails
+				container.ID = fmt.Sprintf("container-%d", time.Now().Unix())
+			}
+		}
+
+		dockercontainermanagement.YamlWriter(container)
+		c.JSON(http.StatusCreated, gin.H{"message": "webtop created successfully"})
 	})
 
 	mockContainer := dockercontainermanagement.DockerContainer{

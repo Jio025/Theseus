@@ -49,7 +49,7 @@ type DBService struct {
 	db *bolt.DB
 }
 
-// DockerContainer running on the host bucket name
+// DockerContainer bucket name
 const DockerContainerBucketName = "DockerContainers"
 
 // Host machines bucket name
@@ -87,8 +87,8 @@ func (s *DBService) Close() {
 	}
 }
 
-// Saving the information of the running DockerContainer
-func (s *DBService) SaveActiveDockerContainer(d DockerContainer) error {
+// Saving the information of the DockerContainer
+func (s *DBService) SaveDockerContainer(d DockerContainer) error {
 	return s.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(DockerContainerBucketName))
 
@@ -100,8 +100,8 @@ func (s *DBService) SaveActiveDockerContainer(d DockerContainer) error {
 	})
 }
 
-// Saving the information of the active HostMachines
-func (s *DBService) SaveActiveHostMachines(h HostMachines) error {
+// Saving the information of the HostMachines
+func (s *DBService) SaveHostMachines(h HostMachines) error {
 	return s.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(HostMachineBucketName))
 
@@ -113,7 +113,7 @@ func (s *DBService) SaveActiveHostMachines(h HostMachines) error {
 	})
 }
 
-func (s DBService) GetActiveDockerContainerByID(id string) (*DockerContainer, error) {
+func (s DBService) GetDockerContainerByID(id string) (*DockerContainer, error) {
 	var d DockerContainer
 
 	err := s.db.View(func(tx *bolt.Tx) error {
@@ -138,7 +138,7 @@ func (s DBService) GetActiveDockerContainerByID(id string) (*DockerContainer, er
 	return &d, nil
 }
 
-func (s DBService) GetActiveHostMachineByID(id string) (*HostMachines, error) {
+func (s DBService) GetHostMachineByID(id string) (*HostMachines, error) {
 	var h HostMachines
 
 	err := s.db.View(func(tx *bolt.Tx) error {
@@ -163,7 +163,7 @@ func (s DBService) GetActiveHostMachineByID(id string) (*HostMachines, error) {
 	return &h, nil
 }
 
-func (s DBService) GetAllActiveDockerContainers() ([]DockerContainer, error) {
+func (s DBService) GetAllDockerContainers() ([]DockerContainer, error) {
 	var dockerContainers []DockerContainer
 
 	err := s.db.View(func(tx *bolt.Tx) error {
@@ -183,7 +183,7 @@ func (s DBService) GetAllActiveDockerContainers() ([]DockerContainer, error) {
 	return dockerContainers, err
 }
 
-func (s DBService) GetAllActiveHostMachines() ([]HostMachines, error) {
+func (s DBService) GetAllHostMachines() ([]HostMachines, error) {
 	var hostMachines []HostMachines
 
 	err := s.db.View(func(tx *bolt.Tx) error {

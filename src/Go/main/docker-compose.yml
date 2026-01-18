@@ -1,17 +1,16 @@
 services:
-  webtop-550e8400:
-    image: lscr.io/linuxserver/webtop:latest
-    container_name: webtop_guillaume_dev
+  webtop-0365babf:
+    image: webtop
+    container_name: lscr.io/linuxserver/webtop:latest
     environment:
       - PGID=1000
       - PUID=1000
-      - TITLE=Guillaume-Webtop
-      - TZ=America/Toronto
+      - TZ=Etc/UTC
     volumes:
-      - /home/guillaume/webtop/config:/config
-      - /var/run/docker.sock:/var/run/docker.sock
+      - custom/path:/
     ports:
       - 3000:3000
       - 3001:3001
+      - 800:0
     shm_size: 1gb
-    restart: unless-stopped
+    restart: on-failure

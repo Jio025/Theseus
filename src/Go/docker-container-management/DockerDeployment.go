@@ -76,7 +76,7 @@ func DeployContainerBackground(dockerContainer DockerContainer, s *DBService) er
 	}
 
 	// Insert the container inside the Bolt database
-	s.SaveActiveDockerContainer(dockerContainer)
+	s.SaveDockerContainer(dockerContainer)
 
 	log.Println("🧰 Started container:", resp.ID)
 
