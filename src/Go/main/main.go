@@ -61,6 +61,9 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	})
+	r.GET("/users", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "manage_users.html", gin.H{})
+	})
 	r.GET("/settings", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "settings.html", gin.H{})
 	})

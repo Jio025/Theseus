@@ -15,6 +15,25 @@ type HostMachines struct {
 	Status string `json:"status"`
 }
 
+// JSON for the user
+type User struct {
+	Username     string `json:"username"`
+	PasswordHash string `json:"password_hash"`
+	Role         string `json:"role"`
+	Team         Team   `json:"team"`
+}
+
+type Team struct {
+	Name         string       `json:"name"`
+	Description  string       `json:"description"`
+	Organization Organization `json:"organization"`
+}
+
+type Organization struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type PortBinding struct {
 	Internal int `json:"internal"`
 	External int `json:"external"`
@@ -55,6 +74,15 @@ const DockerContainerBucketName = "DockerContainers"
 // Host machines bucket name
 const HostMachineBucketName = "HostMachines"
 
+// Users bucket name
+const UserBucketName = "Users"
+
+// Teams bucket name
+const TeamBucketName = "Teams"
+
+// Organization bucket name
+const OrganizationBucketName = "Organizations"
+
 // InitDB starts and creates the DB and the buckets
 func InitDB(filepath string) (*DBService, error) {
 	db, err := bolt.Open(filepath, 0600, &bolt.Options{Timeout: 1 * time.Second})
@@ -65,7 +93,7 @@ func InitDB(filepath string) (*DBService, error) {
 	// Creating the buckets
 	err = db.Update(func(tx *bolt.Tx) error {
 		// Defining the buckets that are going to be created
-		buckets := []string{DockerContainerBucketName, HostMachineBucketName}
+		buckets := []string{DockerContainerBucketName, HostMachineBucketName, UserBucketName, TeamBucketName, OrganizationBucketName}
 
 		for _, bucket := range buckets {
 			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
@@ -201,4 +229,172 @@ func (s DBService) GetAllHostMachines() ([]HostMachines, error) {
 	})
 
 	return hostMachines, err
+}
+
+// Saving the information of the User
+func (s *DBService) SaveUser(u User) error {
+	return s.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(UserBucketName))
+
+		buf, err := json.Marshal(u)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(u.Username), buf)
+	})
+}
+
+// GetUserByUsername retrieves a user by their username
+func (s DBService) GetUserByUsername(username string) (*User, error) {
+	var u User
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(UserBucketName))
+
+		data := b.Get([]byte(username))
+
+		if data == nil {
+			return fmt.Errorf("❗ user with username : %s, was not found", username)
+		}
+
+		return json.Unmarshal(data, &u)
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+// GetAllUsers retrieves all users from the database
+func (s DBService) GetAllUsers() ([]User, error) {
+	var users []User
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(UserBucketName))
+
+		return b.ForEach(func(k, v []byte) error {
+			var u User
+			if err := json.Unmarshal(v, &u); err != nil {
+				return err
+			}
+			users = append(users, u)
+			return nil
+		})
+	})
+
+	return users, err
+}
+
+// Saving the information of the Team
+func (s *DBService) SaveTeam(t Team) error {
+	return s.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(TeamBucketName))
+
+		buf, err := json.Marshal(t)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(t.Name), buf)
+	})
+}
+
+// GetTeamByName retrieves a team by its name
+func (s DBService) GetTeamByName(name string) (*Team, error) {
+	var t Team
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(TeamBucketName))
+
+		data := b.Get([]byte(name))
+
+		if data == nil {
+			return fmt.Errorf("❗ team with name : %s, was not found", name)
+		}
+
+		return json.Unmarshal(data, &t)
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &t, nil
+}
+
+// GetAllTeams retrieves all teams from the database
+func (s DBService) GetAllTeams() ([]Team, error) {
+	var teams []Team
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(TeamBucketName))
+
+		return b.ForEach(func(k, v []byte) error {
+			var t Team
+			if err := json.Unmarshal(v, &t); err != nil {
+				return err
+			}
+			teams = append(teams, t)
+			return nil
+		})
+	})
+
+	return teams, err
+}
+
+// Saving the information of the Organization
+func (s *DBService) SaveOrganization(o Organization) error {
+	return s.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(OrganizationBucketName))
+
+		buf, err := json.Marshal(o)
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(o.Name), buf)
+	})
+}
+
+// GetOrganizationByName retrieves an organization by its name
+func (s DBService) GetOrganizationByName(name string) (*Organization, error) {
+	var o Organization
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(OrganizationBucketName))
+
+		data := b.Get([]byte(name))
+
+		if data == nil {
+			return fmt.Errorf("❗ organization with name : %s, was not found", name)
+		}
+
+		return json.Unmarshal(data, &o)
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &o, nil
+}
+
+// GetAllOrganizations retrieves all organizations from the database
+func (s DBService) GetAllOrganizations() ([]Organization, error) {
+	var organizations []Organization
+
+	err := s.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(OrganizationBucketName))
+
+		return b.ForEach(func(k, v []byte) error {
+			var o Organization
+			if err := json.Unmarshal(v, &o); err != nil {
+				return err
+			}
+			organizations = append(organizations, o)
+			return nil
+		})
+	})
+
+	return organizations, err
 }
